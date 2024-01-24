@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+  <title>Scroll Cards with Intersection Observer</title>
+</head>
+<body>
+
+  <div class="card" data-card-id="1">
+    <!-- Image for card 1 will be loaded dynamically -->
+  </div>
+
+  <div class="card" data-card-id="2">
+    <!-- Image for card 2 will be loaded dynamically -->
+  </div>
+
+  <div class="card" data-card-id="3">
+    <!-- Image for card 3 will be loaded dynamically -->
+  </div>
+
+  <div class="card" data-card-id="4">
+    <!-- Image for card 4 will be loaded dynamically -->
+  </div>
+
+  <div class="card" data-card-id="5">
+    <!-- Image for card 5 will be loaded dynamically -->
+  </div>
+
+  <script>
+    function observeCard(entries, observer) {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                const card = entry.target;
+                const index = parseInt(card.getAttribute('data-card-id'));
+                const imageUrl = `https://picsum.photos/800/600?random=${index}`;
+
+                fetch(imageUrl)
+                .then(response => response.url)
+                .then(imageSrc => {
+                    const image = new Image();
+                    image.src = imageSrc;
+                    image.alt = "iamge set by observer api";
+                    image.onload = function() {
+                        card.appendChild(image);
+                    };
+                });
+                observer.unobserve(card);
+            }
+        })
+    }
+    const observer = new IntersectionObserver(observeCard, {threshold : 0.2});
+    document.querySelectorAll('.card').forEach(elem => {
+        observer.observe(elem);
+    })
+  </script>
+
+</body>
+</html>
